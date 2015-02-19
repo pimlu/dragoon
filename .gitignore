@@ -1,2 +1,5 @@
 /build
 /dist
+*.tab.c
+*.tab.h
+*.yy.c

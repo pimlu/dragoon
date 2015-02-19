@@ -21,7 +21,7 @@ Opts::Opts(int argc, char *argv[]) {
         help();
         break;
       case 't':
-        if (!strcmp("js",optarg)) {
+        if(!strcmp("js",optarg)) {
           target = JS;
         } else if(!strcmp("x86",optarg)) {
           cerr << "x86 not yet supported" << endl;
@@ -48,10 +48,17 @@ Opts::Opts(int argc, char *argv[]) {
         std::abort();
     }
   }
-  //if o wasn't set
+  nonopts = optind;
+
+  if(argc - nonopts == 0) {
+    cerr << "No input files specified." << endl;
+    help();
+  } else if(argc - nonopts > 1) {
+    cerr << "Only one input file is currently supported." << endl;
+    help();
+  }
+
   if(ofile.length() == 0) {
-    //TODO doesn't support x86 yet, when we get there
     ofile = "a.js";
   }
-  nonopts = optind;
 }
