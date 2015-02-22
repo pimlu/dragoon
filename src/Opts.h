@@ -3,8 +3,8 @@
 
 class Opts {
 public:
-  enum Targets {JS,X86};
-  int target = JS;
+  enum Targets {X86,JS};
+  int target = X86;
   string ofile;
   int nonopts;
   Opts(int argc, char *argv[]);

@@ -21,10 +21,10 @@ Opts::Opts(int argc, char *argv[]) {
         help();
         break;
       case 't':
-        if(!strcmp("js",optarg)) {
-          target = JS;
-        } else if(!strcmp("x86",optarg)) {
-          cerr << "x86 not yet supported" << endl;
+        if(!strcmp("x86",optarg)) {
+          target = X86;
+        } else if(!strcmp("js",optarg)) {
+          cerr << "js not yet supported" << endl;
           std::exit(1);
         } else {
           cerr << "invalid target " << optarg <<": must be js or x86"<<endl;

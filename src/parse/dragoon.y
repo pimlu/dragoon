@@ -9,6 +9,8 @@ extern "C" int yylex();
 void yyerror(const char *s);
 %}
 
+%locations
+
 //C union for the different token types
 %union {
   int ival;
