@@ -1,3 +1,10 @@
+%code requires {
+#include "../global.h"
+#include "ast.h"
+using namespace ast;
+
+}
+
 %{
 #include <iostream>
 #include <cstdio>
@@ -7,6 +14,7 @@ using namespace std;
 extern "C" int yylex();
 
 void yyerror(const char *s);
+
 %}
 
 %locations
@@ -16,11 +24,19 @@ void yyerror(const char *s);
   int ival;
   float fval;
   char *sval;
+  Module *module;
+  Block *block;
+  int token;
 }
 
 %token <ival> INT
 %token <fval> FLOAT
 %token <sval> STRING
+
+
+%token <token> TEQUAL
+%token <token> TLPAREN TRPAREN TLBRACE TRBRACE
+%token <token> TPLUS TMINUS TMUL TDIV
 
 %%
 

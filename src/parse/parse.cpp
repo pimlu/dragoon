@@ -3,7 +3,7 @@
 
 extern "C" FILE *yyin;
 
-void parse(const char* path) {
+void parse(const char *path) {
   // open a file handle to a particular file:
   FILE *file = fopen(path, "r");
   // make sure it is valid:

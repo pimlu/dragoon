@@ -14,6 +14,8 @@ int yycolumn = 1;
     yylloc.first_column = yycolumn; yylloc.last_column = yycolumn + yyleng - 1;\
     yycolumn += yyleng;
 
+#define TOKEN(t) (yylval.token = t)
+
 %}
 /* noyywrap so that it doesn't call yywrap upon EOF- we do that for it. noinput
    and nounput because we aren't using those functions, causing warnings */
@@ -31,5 +33,11 @@ int yycolumn = 1;
   yylval.sval = strdup(yytext);
   return STRING;
 }
-.                ;
+
+"="                     return TOKEN(TEQUAL);
+"+"                     return TOKEN(TPLUS);
+"-"                     return TOKEN(TMINUS);
+"*"                     return TOKEN(TMUL);
+"/"                     return TOKEN(TDIV);
+.                       printf("Unrecognized character: %s\n", yytext); yyterminate();
 %%

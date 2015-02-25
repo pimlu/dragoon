@@ -1,6 +1,6 @@
  #comment this if you wish to use the default
 CXX=clang++
-CFLAGS= -x c++ -c -g -Wall -Wno-deprecated-register
+CFLAGS= -x c++ -std=c++11 -c -g -Wall -Wno-deprecated-register
 CXXFLAGS=-c -g -Wall -std=c++11
 LDFLAGS=
 

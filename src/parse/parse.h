@@ -1,1 +1,1 @@
-void parse(const char* path);
+void parse(const char *path);
