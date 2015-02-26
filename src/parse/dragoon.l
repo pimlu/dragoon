@@ -17,7 +17,7 @@ int yycolumn = 1;
 #define TOKEN(t) (yylval.token = t)
 
 %}
-/* noyywrap so that it doesn't call yywrap upon EOF- we do that for it. noinput
+/* noyywrap so that it doesn't call yywrap upon EOF- we do that for it.  noinput
    and nounput because we aren't using those functions, causing warnings */
 %option noyywrap noinput nounput
 
