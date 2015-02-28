@@ -20,9 +20,11 @@ Node::Node(int fline, int fcol, int lline, int lcol) :
 INITLIST_CPP(Statement,Node);
 INITLIST_CPP(Expr,Statement);
 
+Block::Block(TokenPos pos, std::vector<Statement*> *stmts)
+  : Statement(pos), stmts(stmts) {}
 void Block::print(std::ostream& strm) const {
-  for(Statement* s : stmts) {
-    strm << s << endl;
+  for(Statement* s : *stmts) {
+    strm << *s << endl;
   }
 }
 
@@ -43,7 +45,7 @@ Module::Module(TokenPos pos, string name, Block *globals) : Node(pos),
   name(name), globals(globals) {
 }
 void Module::print(std::ostream& strm) const {
-  strm << "<module " << name << endl << globals << ">" << endl;
+  strm << "<module " << name << endl << *globals << ">" << endl;
 }
 
 }

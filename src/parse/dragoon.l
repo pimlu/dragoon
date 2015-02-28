@@ -25,6 +25,15 @@ int yycolumn = 1;
 %option yylineno
 
 %%
+
+"module"          return TOKEN(MODULE);
+";"               return TOKEN(SEMI);
+"="               return TOKEN(TEQUAL);
+"+"               return TOKEN(TPLUS);
+"-"               return TOKEN(TMINUS);
+"*"               return TOKEN(TMUL);
+"/"               return TOKEN(TDIV);
+
 [ \t]             ;
 \n                { yycolumn = 1; }
 [0-9]+\.[0-9]+    { yylval.fval = atof(yytext); return FLOAT; }
@@ -33,11 +42,5 @@ int yycolumn = 1;
   yylval.sval = strdup(yytext);
   return STRING;
 }
-
-"="                     return TOKEN(TEQUAL);
-"+"                     return TOKEN(TPLUS);
-"-"                     return TOKEN(TMINUS);
-"*"                     return TOKEN(TMUL);
-"/"                     return TOKEN(TDIV);
 .                       printf("Unrecognized character: %s\n", yytext); yyterminate();
 %%

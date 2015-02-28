@@ -1,9 +1,8 @@
-#include "../global.h"
-#include "dragoon.tab.h"
+#include "parse.h"
 
 extern "C" FILE *yyin;
 
-void parse(const char *path) {
+Module* parse(const char *path) {
   // open a file handle to a particular file:
   FILE *file = fopen(path, "r");
   // make sure it is valid:
@@ -19,4 +18,5 @@ void parse(const char *path) {
     yyparse();
   } while (!feof(yyin));
 
+  return program_;
 }

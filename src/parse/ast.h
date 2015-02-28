@@ -8,8 +8,8 @@
 
 namespace ast {
 
-//this is layout compatible with YYLTYPE according to C++11, thus
-//reinterpret_cast is guaranteed to work correctly
+//this is layout compatible with YYLTYPE, thus reinterpret_cast is guaranteed
+//to work correctly
 struct TokenPos {
   int fline, fcol, lline, lcol;
 };
@@ -33,7 +33,8 @@ class Block : public Statement {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
-  std::vector<Statement*> stmts;
+  std::vector<Statement*> *stmts;
+  Block(TokenPos pos, std::vector<Statement*> *stmts);
 };
 
 class Expr : public Statement {
@@ -70,7 +71,7 @@ public:
   Expr *lhs, *rhs;
 };
 
-class Module : Node {
+class Module : public Node {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
