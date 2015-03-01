@@ -43,15 +43,15 @@ Module *program_;
   int token;
 }
 
-%token <ival> INT
-%token <fval> FLOAT
-%token <sval> STRING
+%token <ival> VINT
+%token <fval> VFLOAT
+%token <sval> VSTRING
 
 %token <token> MODULE
 %token <token> SEMI
-%token <token> TEQUAL
-%token <token> TLPAREN TRPAREN TLBRACE TRBRACE
-%token <token> TPLUS TMINUS TMUL TDIV
+%token <token> EQUAL
+%token <token> LPAREN RPAREN LBRACE RBRACE
+%token <token> PLUS MINUS MUL DIV
 
 %type <module> module
 %type <block> block
@@ -59,25 +59,31 @@ Module *program_;
 %type <stmt> stmt
 %type <expr> expr
 
+//operator precedence
+%left TPLUS TMINUS
+%left TMUL TDIV
+
 %%
 
 dragoon : module { program_ = $1; }
         ;
 
-module : MODULE STRING SEMI block { $$ = new Module(tpos(@$), $2, $4); }
+module : MODULE VSTRING ';' block { $$ = new Module(tpos(@$), $2, $4); }
        ;
 
+//FIXME empty blocks
 block : stmts { $$ = new Block(tpos(@$), $1); }
 
 stmts : stmt { $$ = new std::vector<Statement*>; $$->push_back($1); }
       | stmts stmt { $$ = $1; $$->push_back($2); }
       ;
 
-stmt : expr SEMI { $$ = $1; }
-     | TLBRACE block TRBRACE { $$ = $2; }
+stmt : expr ';' { $$ = $1; }
+     | '{' block '}' { $$ = $2; }
      ;
 
-expr : INT { $$ = new Int32Expr(tpos(@$), $1); }
+expr : VINT { $$ = new Int32Expr(tpos(@$), $1); }
+     | VSTRING { $$ = new IdExpr(tpos(@$), $1); }
      ;
 
 %%

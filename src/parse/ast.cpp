@@ -7,6 +7,8 @@
 
 namespace ast {
 
+//TODO replace endl with indenting thing
+
 std::ostream& operator<<(std::ostream& str, Node const& data) {
   data.print(str);
   return str;
@@ -23,9 +25,17 @@ INITLIST_CPP(Expr,Statement);
 Block::Block(TokenPos pos, std::vector<Statement*> *stmts)
   : Statement(pos), stmts(stmts) {}
 void Block::print(std::ostream& strm) const {
+  strm << "<block" << endl;
   for(Statement* s : *stmts) {
     strm << *s << endl;
   }
+  strm << ">";
+}
+Block::~Block() {
+  for(Statement* s : *stmts) {
+    delete s;
+  }
+  delete stmts;
 }
 
 IdExpr::IdExpr(TokenPos pos, string id) : Expr(pos), id(id) {}
@@ -35,7 +45,14 @@ void IdExpr::print(std::ostream& strm) const {
   strm << "<id " << id << ">";
 }
 void Int32Expr::print(std::ostream& strm) const {
-  strm << val;
+  strm << "<int32 " << val << ">";
+}
+
+BinOp::BinOp(TokenPos pos, unsigned char op, Expr *lhs, Expr *rhs)
+  : Expr(pos), op(op), lhs(lhs), rhs(rhs) {}
+BinOp::~BinOp() {
+  delete lhs;
+  delete rhs;
 }
 void BinOp::print(std::ostream& strm) const {
   strm << "<" << op << " " << lhs << "," << rhs << ">";
@@ -44,8 +61,11 @@ void BinOp::print(std::ostream& strm) const {
 Module::Module(TokenPos pos, string name, Block *globals) : Node(pos),
   name(name), globals(globals) {
 }
+Module::~Module() {
+  delete globals;
+}
 void Module::print(std::ostream& strm) const {
-  strm << "<module " << name << endl << *globals << ">" << endl;
+  strm << "<module " << name << " " << *globals << ">" << endl;
 }
 
 }

@@ -27,20 +27,15 @@ int yycolumn = 1;
 %%
 
 "module"          return TOKEN(MODULE);
-";"               return TOKEN(SEMI);
-"="               return TOKEN(TEQUAL);
-"+"               return TOKEN(TPLUS);
-"-"               return TOKEN(TMINUS);
-"*"               return TOKEN(TMUL);
-"/"               return TOKEN(TDIV);
+[-+*/=(){};]      return *yytext;
 
 [ \t]             ;
 \n                { yycolumn = 1; }
-[0-9]+\.[0-9]+    { yylval.fval = atof(yytext); return FLOAT; }
-[0-9]+            { yylval.ival = atoi(yytext); return INT; }
+[0-9]+\.[0-9]+    { yylval.fval = atof(yytext); return VFLOAT; }
+[0-9]+            { yylval.ival = atoi(yytext); return VINT; }
 [a-zA-Z0-9]+      {
   yylval.sval = strdup(yytext);
-  return STRING;
+  return VSTRING;
 }
 .                       printf("Unrecognized character: %s\n", yytext); yyterminate();
 %%

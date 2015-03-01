@@ -1,2 +1,7 @@
 module foo;
 123;
+bar;
+{
+  thisIsABlock;
+  275;
+}

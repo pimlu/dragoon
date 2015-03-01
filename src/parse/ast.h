@@ -17,6 +17,7 @@ struct TokenPos {
 class Node {
 protected:
   virtual void print(std::ostream& strm) const = 0;
+  virtual ~Node() {};
 public:
   int fline, fcol, lline, lcol;
 
@@ -35,6 +36,7 @@ protected:
 public:
   std::vector<Statement*> *stmts;
   Block(TokenPos pos, std::vector<Statement*> *stmts);
+  ~Block();
 };
 
 class Expr : public Statement {
@@ -69,6 +71,8 @@ public:
   unsigned char op;
   bool left = false;
   Expr *lhs, *rhs;
+  BinOp(TokenPos pos, unsigned char op, Expr *lhs, Expr *rhs);
+  ~BinOp();
 };
 
 class Module : public Node {
@@ -78,6 +82,7 @@ public:
   string name;
   Block *globals;
   Module(TokenPos pos, string name, Block *globals);
+  ~Module();
 };
 
 
