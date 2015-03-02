@@ -48,14 +48,15 @@ void Int32Expr::print(std::ostream& strm) const {
   strm << "<int32 " << val << ">";
 }
 
-BinOp::BinOp(TokenPos pos, unsigned char op, Expr *lhs, Expr *rhs)
+BinOp::BinOp(TokenPos pos, int op, Expr *lhs, Expr *rhs)
   : Expr(pos), op(op), lhs(lhs), rhs(rhs) {}
 BinOp::~BinOp() {
   delete lhs;
   delete rhs;
 }
 void BinOp::print(std::ostream& strm) const {
-  strm << "<" << op << " " << lhs << "," << rhs << ">";
+  //FIXME op string
+  strm << "<" << op << " " << *lhs << ", " << *rhs << ">";
 }
 
 Module::Module(TokenPos pos, string name, Block *globals) : Node(pos),

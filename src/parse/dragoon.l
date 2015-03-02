@@ -27,7 +27,12 @@ int yycolumn = 1;
 %%
 
 "module"          return TOKEN(MODULE);
-[-+*/=(){};]      return *yytext;
+[(){}.,;]         return *yytext;
+
+"+"               return TOKEN(PLUS);
+"-"               return TOKEN(MINUS);
+"*"               return TOKEN(MUL);
+"/"               return TOKEN(DIV);
 
 [ \t]             ;
 \n                { yycolumn = 1; }

@@ -3,5 +3,5 @@ module foo;
 bar;
 {
   thisIsABlock;
-  275;
+  275+2;
 }

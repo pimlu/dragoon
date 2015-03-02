@@ -48,20 +48,18 @@ Module *program_;
 %token <sval> VSTRING
 
 %token <token> MODULE
-%token <token> SEMI
-%token <token> EQUAL
-%token <token> LPAREN RPAREN LBRACE RBRACE
-%token <token> PLUS MINUS MUL DIV
+%token <token> EQUAL PLUS MINUS MUL DIV
 
 %type <module> module
 %type <block> block
 %type <stmts> stmts
 %type <stmt> stmt
 %type <expr> expr
+%type <token> binop
 
 //operator precedence
-%left TPLUS TMINUS
-%left TMUL TDIV
+%left PLUS MINUS
+%left MUL DIV
 
 %%
 
@@ -84,8 +82,10 @@ stmt : expr ';' { $$ = $1; }
 
 expr : VINT { $$ = new Int32Expr(tpos(@$), $1); }
      | VSTRING { $$ = new IdExpr(tpos(@$), $1); }
+     | expr binop expr { $$ = new BinOp(tpos(@$), $2, $1, $3); }
      ;
-
+binop : PLUS | MINUS | MUL | DIV
+      ;
 %%
 
 void yyerror(const char *s) {

@@ -68,10 +68,10 @@ class BinOp : public Expr {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
-  unsigned char op;
+  int op;
   bool left = false;
   Expr *lhs, *rhs;
-  BinOp(TokenPos pos, unsigned char op, Expr *lhs, Expr *rhs);
+  BinOp(TokenPos pos, int op, Expr *lhs, Expr *rhs);
   ~BinOp();
 };
 
