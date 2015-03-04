@@ -1,12 +1,19 @@
 #pragma once
 #include "../global.h"
 #include <vector>
+#include <map>
 
 #define INITLIST_H(name)  name();\
   name(TokenPos pos);\
   name(int fline, int fcol, int lline, int lcol);
 
 namespace ast {
+
+//converting between token IDs and strings
+using TokOp = std::map<int, string>;
+using OpTok = std::map<string, int>;
+extern TokOp tokop;
+extern OpTok optok;
 
 //this is layout compatible with YYLTYPE, thus reinterpret_cast is guaranteed
 //to work correctly

@@ -3,5 +3,5 @@ module foo;
 bar;
 {
   thisIsABlock;
-  275+2;
+  x = 4+5*d;
 }

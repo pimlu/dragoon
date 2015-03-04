@@ -19,7 +19,7 @@ dist/$(EXECUTABLE): $(OBJECTS) $(PARSEO)
 	@mkdir -p dist
 	$(CXX) $(OBJECTS) $(PARSEO) $(LDFLAGS) -o $@
 
-build/%.o: src/%.cpp $(PARSE).tab.h
+build/%.o: src/%.cpp $(PARSE).tab.c $(PARSE).tab.h
 	@mkdir -p build
 	$(CXX) $(CXXFLAGS) $< -o $@
 
@@ -29,7 +29,7 @@ build/parse/bison.o: $(PARSE).tab.c
 	$(CXX) $(CFLAGS) $< -o $@
 
 $(PARSE).tab.c $(PARSE).tab.h: $(PARSE).y
-	bison -d $< -o $(PARSE).tab.c
+	bison --debug --verbose -d $< -o $(PARSE).tab.c
 
 
 build/parse/flex.o: $(PARSE).yy.c $(PARSE).tab.c $(PARSE).tab.h

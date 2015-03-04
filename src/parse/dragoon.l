@@ -29,6 +29,7 @@ int yycolumn = 1;
 "module"          return TOKEN(MODULE);
 [(){}.,;]         return *yytext;
 
+"="               return TOKEN(EQUAL);
 "+"               return TOKEN(PLUS);
 "-"               return TOKEN(MINUS);
 "*"               return TOKEN(MUL);

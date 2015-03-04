@@ -1,4 +1,5 @@
 #include "ast.h"
+#include "dragoon.tab.h"
 
 #define INITLIST_CPP(name,base) name::name(TokenPos pos) :\
     name(pos.fline, pos.fcol, pos.lline, pos.lcol) {}\
@@ -7,7 +8,73 @@
 
 namespace ast {
 
-//TODO replace endl with indenting thing
+class Indent {
+public:
+  int depth = 0;
+  Indent(int depth) : depth(depth) {}
+  friend std::ostream& operator<<(std::ostream& str, Indent const& indent) {
+    str << endl;
+    for(int i = 0; i < indent.depth; i++) {
+      str << "  ";
+    }
+    return str;
+  }
+  Indent& operator++() {
+    depth++;
+    return *this;
+  }
+  Indent& operator--() {
+    depth--;
+    return *this;
+  }
+  Indent operator++(int) {
+    Indent tmp(*this);
+    operator++();
+    return tmp;
+  }
+  Indent operator--(int) {
+    Indent tmp(*this);
+    operator--();
+    return tmp;
+  }
+};
+
+Indent tabl(0);
+
+//provides boost like functionality by using clever operator overloading
+//and templates
+template <typename T, typename U>
+class create_map {
+private:
+  std::map<T, U> m_map;
+public:
+  create_map(const T& key, const U& val) {
+    m_map[key] = val;
+  }
+  create_map<T, U>& operator()(const T& key, const U& val) {
+    m_map[key] = val;
+    return *this;
+  }
+  operator std::map<T, U>() {
+    return m_map;
+  }
+};
+
+OpTok reverse(TokOp tokop) {
+  OpTok optok;
+  for(auto& x : tokop) {
+    optok[x.second] = x.first;
+  }
+  return optok;
+}
+
+TokOp tokop = create_map<int, string>
+  (EQUAL,"=")
+  (PLUS,"+")
+  (MINUS,"-")
+  (MUL,"*")
+  (DIV,"/");
+OpTok optok = reverse(tokop);
 
 std::ostream& operator<<(std::ostream& str, Node const& data) {
   data.print(str);
@@ -25,11 +92,12 @@ INITLIST_CPP(Expr,Statement);
 Block::Block(TokenPos pos, std::vector<Statement*> *stmts)
   : Statement(pos), stmts(stmts) {}
 void Block::print(std::ostream& strm) const {
-  strm << "<block" << endl;
+  strm << "<block";
+  tabl++;
   for(Statement* s : *stmts) {
-    strm << *s << endl;
+    strm << tabl << *s;
   }
-  strm << ">";
+  strm << --tabl << ">";
 }
 Block::~Block() {
   for(Statement* s : *stmts) {
@@ -56,7 +124,7 @@ BinOp::~BinOp() {
 }
 void BinOp::print(std::ostream& strm) const {
   //FIXME op string
-  strm << "<" << op << " " << *lhs << ", " << *rhs << ">";
+  strm << "<binop " << tokop[op] << " " << *lhs << ", " << *rhs << ">";
 }
 
 Module::Module(TokenPos pos, string name, Block *globals) : Node(pos),
@@ -66,7 +134,7 @@ Module::~Module() {
   delete globals;
 }
 void Module::print(std::ostream& strm) const {
-  strm << "<module " << name << " " << *globals << ">" << endl;
+  strm << "<module " << name << " " << *globals << ">" << tabl;
 }
 
 }

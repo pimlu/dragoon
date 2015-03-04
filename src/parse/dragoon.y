@@ -58,8 +58,12 @@ Module *program_;
 %type <token> binop
 
 //operator precedence
+%right EQUAL
 %left PLUS MINUS
 %left MUL DIV
+//letting bison know how many s/r conflicts it should be seeing- which is
+//exactly the number of operators atm
+%expect 5
 
 %%
 
@@ -84,7 +88,7 @@ expr : VINT { $$ = new Int32Expr(tpos(@$), $1); }
      | VSTRING { $$ = new IdExpr(tpos(@$), $1); }
      | expr binop expr { $$ = new BinOp(tpos(@$), $2, $1, $3); }
      ;
-binop : PLUS | MINUS | MUL | DIV
+binop : PLUS | MINUS | MUL | DIV | EQUAL
       ;
 %%
 
