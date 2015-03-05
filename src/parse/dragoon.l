@@ -43,5 +43,8 @@ int yycolumn = 1;
   yylval.sval = strdup(yytext);
   return VSTRING;
 }
-.                       printf("Unrecognized character: %s\n", yytext); yyterminate();
+.                 {
+  yylval.sval = strdup(yytext);
+  return BADTOK;
+}
 %%

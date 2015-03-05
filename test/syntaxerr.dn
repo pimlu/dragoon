@@ -1,0 +1,8 @@
+module err;
+123;
+bar;
+{
+  thisIsABlock%;
+  x = 4+5*a*;
+}
+y+*3;

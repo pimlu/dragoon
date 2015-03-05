@@ -100,7 +100,7 @@ void Block::print(std::ostream& strm) const {
   strm << --tabl << ">";
 }
 Block::~Block() {
-  for(Statement* s : *stmts) {
+  for(Statement *s : *stmts) {
     delete s;
   }
   delete stmts;
@@ -134,7 +134,7 @@ Module::~Module() {
   delete globals;
 }
 void Module::print(std::ostream& strm) const {
-  strm << "<module " << name << " " << *globals << ">" << tabl;
+  strm << "<module " << name << " " << *globals << ">";
 }
 
 }

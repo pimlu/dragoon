@@ -1,8 +1,9 @@
 #include "parse.h"
 
-extern "C" FILE *yyin;
+void yyrestart( FILE *new_file );
 
 Module* parse(const char *path) {
+  path_ = string(path);
   // open a file handle to a particular file:
   FILE *file = fopen(path, "r");
   // make sure it is valid:
@@ -11,12 +12,12 @@ Module* parse(const char *path) {
     exit(1);
   }
   // set flex to read from it instead of defaulting to STDIN:
-  yyin = file;
+  yyrestart(file);
+  yyparse();
 
-  // parse through the input until there is no more:
-  do {
-    yyparse();
-  } while (!feof(yyin));
-
+  if(errs_) {
+    delete program_;
+    program_ = nullptr;
+  }
   return program_;
 }
