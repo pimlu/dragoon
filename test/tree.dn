@@ -5,3 +5,9 @@ bar;
   thisIsABlock;
   x = 4+5*a;
 }
+quack;
+if (x) {}
+if(yz) {
+  x=5;
+}
+if(abc) yz=5;

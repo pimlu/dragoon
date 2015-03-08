@@ -53,6 +53,16 @@ public:
   INITLIST_H(Expr)
 };
 
+class IfStmt : public Statement {
+protected:
+  virtual void print(std::ostream& strm) const;
+public:
+  Expr *cond;
+  Statement *body;
+  IfStmt(TokenPos pos, Expr *cond, Statement *body);
+  ~IfStmt();
+};
+
 class IdExpr : public Expr {
 protected:
   virtual void print(std::ostream& strm) const;

@@ -56,7 +56,7 @@ Module *program_;
 %token <sval> VSTRING
 
 %token <sval> BADTOK
-%token <token> MODULE
+%token <token> MODULE IF
 %token <token> EQUAL PLUS MINUS MUL DIV
 
 %type <module> module
@@ -88,8 +88,9 @@ dragoon : module { program_ = $1; }
 module : MODULE VSTRING ';' block { $$ = new Module(tpos(@$), $2, $4); delete $2; }
        ;
 
-//FIXME empty blocks
+//TODO more accurate block range
 block : stmts { $$ = new Block(tpos(@$), $1); }
+      | { $$ = new Block(tpos(@$), new std::vector<Statement*>); }
 
 stmts : stmt { $$ = new std::vector<Statement*>; $$->push_back($1); }
       | stmts stmt { $$ = $1; $$->push_back($2); }
@@ -98,6 +99,7 @@ stmts : stmt { $$ = new std::vector<Statement*>; $$->push_back($1); }
 stmt : expr ';' { $$ = $1; }
      | '{' block '}' { $$ = $2; }
      | error ';' { yyerrok; $$ = nullptr; }
+     | IF '(' expr ')' stmt { $$ = new IfStmt(tpos(@$), $3, $5); }
      ;
 
 expr : VINT { $$ = new Int32Expr(tpos(@$), $1); }

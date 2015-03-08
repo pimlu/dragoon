@@ -27,6 +27,7 @@ int yycolumn = 1;
 %%
 
 "module"          return TOKEN(MODULE);
+"if"              return TOKEN(IF);
 [(){}.,;]         return *yytext;
 
 "="               return TOKEN(EQUAL);

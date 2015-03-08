@@ -106,6 +106,16 @@ Block::~Block() {
   delete stmts;
 }
 
+IfStmt::IfStmt(TokenPos pos, Expr *cond, Statement *body)
+: Statement(pos), cond(cond), body(body) {}
+IfStmt::~IfStmt() {
+  delete cond;
+  delete body;
+}
+void IfStmt::print(std::ostream& strm) const {
+  strm << "<if (" << *cond << ") then " << *body;
+}
+
 IdExpr::IdExpr(TokenPos pos, string id) : Expr(pos), id(id) {}
 Int32Expr::Int32Expr(TokenPos pos, int32 val) : Expr(pos), val(val) {}
 
@@ -123,7 +133,6 @@ BinOp::~BinOp() {
   delete rhs;
 }
 void BinOp::print(std::ostream& strm) const {
-  //FIXME op string
   strm << "<binop " << tokop[op] << " " << *lhs << ", " << *rhs << ">";
 }
 
