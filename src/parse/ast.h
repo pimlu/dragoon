@@ -10,10 +10,10 @@
 namespace ast {
 
 //converting between token IDs and strings
-using TokOp = std::map<int, string>;
-using OpTok = std::map<string, int>;
-extern TokOp tokop;
-extern OpTok optok;
+using TokStr = std::map<int, string>;
+using StrTok = std::map<string, int>;
+extern TokStr tokstr;
+extern StrTok strtok;
 
 //this is layout compatible with YYLTYPE, thus reinterpret_cast is guaranteed
 //to work correctly
@@ -53,14 +53,15 @@ public:
   INITLIST_H(Expr)
 };
 
-class IfStmt : public Statement {
+class SimpleControl : public Statement {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
+  int type;
   Expr *cond;
-  Statement *body;
-  IfStmt(TokenPos pos, Expr *cond, Statement *body);
-  ~IfStmt();
+  Statement *body, *elsebody = nullptr;
+  SimpleControl(TokenPos pos, int type, Expr *cond, Statement *body);
+  ~SimpleControl();
 };
 
 class IdExpr : public Expr {

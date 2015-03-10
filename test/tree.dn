@@ -7,7 +7,14 @@ bar;
 }
 quack;
 if (x) {}
-if(yz) {
+while(yz) {
   x=5;
 }
 if(abc) yz=5;
+else q=z;
+
+while(foo) {
+  bar=baz+5;
+} else {
+  baz=bar+5;
+}

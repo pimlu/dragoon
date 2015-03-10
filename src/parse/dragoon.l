@@ -28,6 +28,8 @@ int yycolumn = 1;
 
 "module"          return TOKEN(MODULE);
 "if"              return TOKEN(IF);
+"while"           return TOKEN(WHILE);
+"else"            return TOKEN(ELSE);
 [(){}.,;]         return *yytext;
 
 "="               return TOKEN(EQUAL);

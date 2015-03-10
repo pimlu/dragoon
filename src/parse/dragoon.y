@@ -48,6 +48,7 @@ Module *program_;
   std::vector<Statement*> *stmts;
   Statement *stmt;
   Expr *expr;
+  SimpleControl *control;
   int token;
 }
 
@@ -56,15 +57,16 @@ Module *program_;
 %token <sval> VSTRING
 
 %token <sval> BADTOK
-%token <token> MODULE IF
+%token <token> MODULE IF WHILE ELSE DO
 %token <token> EQUAL PLUS MINUS MUL DIV
 
 %type <module> module
 %type <block> block
 %type <stmts> stmts
-%type <stmt> stmt
+%type <stmt> stmt else
 %type <expr> expr
-%type <token> binop
+%type <control> control
+%type <token> binop controltok
 
 %destructor { delete $$; } <sval> <module> <block> <stmt> <expr>
 %destructor {
@@ -99,8 +101,16 @@ stmts : stmt { $$ = new std::vector<Statement*>; $$->push_back($1); }
 stmt : expr ';' { $$ = $1; }
      | '{' block '}' { $$ = $2; }
      | error ';' { yyerrok; $$ = nullptr; }
-     | IF '(' expr ')' stmt { $$ = new IfStmt(tpos(@$), $3, $5); }
+     | control { $$ = $1; }
+     | control else { $$ = $1; $1->elsebody = $2; }
      ;
+
+control : controltok '(' expr ')' stmt { $$ = new SimpleControl(tpos(@$), $1, $3, $5); }
+
+else : ELSE stmt { $$ = $2; }
+
+controltok : IF | WHILE
+        ;
 
 expr : VINT { $$ = new Int32Expr(tpos(@$), $1); }
      | VSTRING { $$ = new IdExpr(tpos(@$), $1); delete $1; }

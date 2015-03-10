@@ -9,5 +9,6 @@ int main(int argc, char *argv[]) {
   Module *program = parse(argv[opts.nonopts]);
   if(program) cout << *program << endl;
   else cout << "program is null (parse fail)" << endl;
+  delete program; //to test leaks
   return 0;
 }

@@ -60,21 +60,24 @@ public:
   }
 };
 
-OpTok reverse(TokOp tokop) {
-  OpTok optok;
-  for(auto& x : tokop) {
-    optok[x.second] = x.first;
+StrTok reverse(TokStr tokstr) {
+  StrTok strtok;
+  for(auto& x : tokstr) {
+    strtok[x.second] = x.first;
   }
-  return optok;
+  return strtok;
 }
 
-TokOp tokop = create_map<int, string>
+TokStr tokstr = create_map<int, string>
   (EQUAL,"=")
   (PLUS,"+")
   (MINUS,"-")
   (MUL,"*")
-  (DIV,"/");
-OpTok optok = reverse(tokop);
+  (DIV,"/")
+  (IF,"if")
+  (WHILE,"while")
+  (DO,"do");
+StrTok strtok = reverse(tokstr);
 
 std::ostream& operator<<(std::ostream& str, Node const& data) {
   data.print(str);
@@ -106,14 +109,20 @@ Block::~Block() {
   delete stmts;
 }
 
-IfStmt::IfStmt(TokenPos pos, Expr *cond, Statement *body)
-: Statement(pos), cond(cond), body(body) {}
-IfStmt::~IfStmt() {
+SimpleControl::SimpleControl(TokenPos pos, int type, Expr *cond, Statement *body)
+: Statement(pos), type(type), cond(cond), body(body) {}
+SimpleControl::~SimpleControl() {
   delete cond;
   delete body;
+  delete elsebody;
 }
-void IfStmt::print(std::ostream& strm) const {
-  strm << "<if (" << *cond << ") then " << *body;
+void SimpleControl::print(std::ostream& strm) const {
+  strm << "<" << tokstr[type] << " (" << *cond << ") " <<
+    (type==IF?"then":"do")
+    <<" " << *body;
+  if(elsebody) {
+    strm << tabl << "else " << *elsebody;
+  }
 }
 
 IdExpr::IdExpr(TokenPos pos, string id) : Expr(pos), id(id) {}
@@ -133,7 +142,7 @@ BinOp::~BinOp() {
   delete rhs;
 }
 void BinOp::print(std::ostream& strm) const {
-  strm << "<binop " << tokop[op] << " " << *lhs << ", " << *rhs << ">";
+  strm << "<binop " << tokstr[op] << " " << *lhs << ", " << *rhs << ">";
 }
 
 Module::Module(TokenPos pos, string name, Block *globals) : Node(pos),
