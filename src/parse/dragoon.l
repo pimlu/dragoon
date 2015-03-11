@@ -17,6 +17,9 @@ int yycolumn = 1;
 #define TOKEN(t) (yylval.token = t)
 
 %}
+
+%s SINGLE_COMMENT MULTI_COMMENT
+
 /* noyywrap so that it doesn't call yywrap upon EOF- we do that for it.  noinput
    and nounput because we aren't using those functions, causing warnings */
 %option noyywrap noinput nounput
@@ -25,7 +28,9 @@ int yycolumn = 1;
 %option yylineno
 
 %%
-
+<INITIAL>{
+"//"              BEGIN(SINGLE_COMMENT);
+"/*"              BEGIN(MULTI_COMMENT);
 "module"          return TOKEN(MODULE);
 "if"              return TOKEN(IF);
 "while"           return TOKEN(WHILE);
@@ -39,7 +44,7 @@ int yycolumn = 1;
 "/"               return TOKEN(DIV);
 
 [ \t]             ;
-\n                { yycolumn = 1; }
+\n                yycolumn = 1;
 [0-9]+\.[0-9]+    { yylval.fval = atof(yytext); return VFLOAT; }
 [0-9]+            { yylval.ival = atoi(yytext); return VINT; }
 [a-zA-Z0-9]+      {
@@ -49,5 +54,19 @@ int yycolumn = 1;
 .                 {
   yylval.sval = strdup(yytext);
   return BADTOK;
+}
+
+}
+
+<SINGLE_COMMENT>{
+\n        { yycolumn = 1; BEGIN(INITIAL); }
+[^\n]+    //eat comment
+}
+
+<MULTI_COMMENT>{
+"*/"      BEGIN(INITIAL);
+[^*\n]+   //eat comment
+"*"       //eat single stars
+\n        yycolumn = 1;
 }
 %%
