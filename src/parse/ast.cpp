@@ -43,7 +43,7 @@ Indent tabl(0);
 
 //provides boost like functionality by using clever operator overloading
 //and templates
-template <typename T, typename U>
+template<typename T, typename U>
 class create_map {
 private:
   std::map<T, U> m_map;
@@ -59,7 +59,7 @@ public:
     return m_map;
   }
 };
-
+//creates the reverse of our 1:1 map
 StrTok reverse(TokStr tokstr) {
   StrTok strtok;
   for(auto& x : tokstr) {
@@ -68,15 +68,23 @@ StrTok reverse(TokStr tokstr) {
   return strtok;
 }
 
+//deletes everything in a vector, and then the vector.
+template<typename T>
+void deleteVec(std::vector<T*> *vec) {
+  for(T *v : *vec) delete v;
+  delete vec;
+}
+
 TokStr tokstr = create_map<int, string>
+  (IF,"if")
+  (WHILE,"while")
+  (DO,"do")
+  (INT,"int")
   (EQUAL,"=")
   (PLUS,"+")
   (MINUS,"-")
   (MUL,"*")
-  (DIV,"/")
-  (IF,"if")
-  (WHILE,"while")
-  (DO,"do");
+  (DIV,"/");
 StrTok strtok = reverse(tokstr);
 
 std::ostream& operator<<(std::ostream& str, Node const& data) {
@@ -89,28 +97,39 @@ Node::Node(TokenPos pos) : Node(pos.fline, pos.fcol, pos.lline, pos.lcol) {}
 Node::Node(int fline, int fcol, int lline, int lcol) :
   fline(fline), fcol(fcol), lline(lline), lcol(lcol) {}
 
-INITLIST_CPP(Statement,Node);
-INITLIST_CPP(Expr,Statement);
+INITLIST_CPP(Stmt,Node);
+INITLIST_CPP(Expr,Stmt);
 
-Block::Block(TokenPos pos, std::vector<Statement*> *stmts)
-  : Statement(pos), stmts(stmts) {}
+Block::Block(TokenPos pos, std::vector<Stmt*> *stmts)
+  : Stmt(pos), stmts(stmts) {}
+
 void Block::print(std::ostream& strm) const {
   strm << "<block";
   tabl++;
-  for(Statement* s : *stmts) {
+  for(Stmt* s : *stmts) {
     strm << tabl << *s;
   }
   strm << --tabl << ">";
 }
 Block::~Block() {
-  for(Statement *s : *stmts) {
-    delete s;
-  }
-  delete stmts;
+  deleteVec<Stmt>(stmts);
 }
 
-SimpleControl::SimpleControl(TokenPos pos, int type, Expr *cond, Statement *body)
-: Statement(pos), type(type), cond(cond), body(body) {}
+VarDecl::VarDecl(TokenPos pos, Type type, std::vector<Expr*> *exprs)
+: Stmt(pos), type(type), exprs(exprs) {}
+VarDecl::~VarDecl() {
+  deleteVec<Expr>(exprs);
+}
+void VarDecl::print(std::ostream& strm) const {
+  strm << "<var " << tokstr[type] << " ";
+  for(Expr* e : *exprs) {
+    strm << *e << ",";
+  }
+  strm << ">";
+}
+
+SimpleControl::SimpleControl(TokenPos pos, int type, Expr *cond, Stmt *body)
+: Stmt(pos), type(type), cond(cond), body(body) {}
 SimpleControl::~SimpleControl() {
   delete cond;
   delete body;

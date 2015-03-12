@@ -32,35 +32,48 @@ public:
   INITLIST_H(Node)
 };
 
-class Statement : public Node {
+class Stmt : public Node {
 public:
-  INITLIST_H(Statement)
+  INITLIST_H(Stmt)
 };
 
-class Block : public Statement {
-protected:
-  virtual void print(std::ostream& strm) const;
-public:
-  std::vector<Statement*> *stmts;
-  Block(TokenPos pos, std::vector<Statement*> *stmts);
-  ~Block();
-};
-
-class Expr : public Statement {
+class Expr : public Stmt {
 public:
   /// Whether it can be used as a left hand for assignment
   bool left;
   INITLIST_H(Expr)
 };
 
-class SimpleControl : public Statement {
+class Block : public Stmt {
+protected:
+  virtual void print(std::ostream& strm) const;
+public:
+  std::vector<Stmt*> *stmts;
+  Block(TokenPos pos, std::vector<Stmt*> *stmts);
+  ~Block();
+};
+
+//TODO more complex types
+using Type = int;
+
+class VarDecl : public Stmt {
+protected:
+  virtual void print(std::ostream& strm) const;
+public:
+  Type type;
+  std::vector<Expr*> *exprs;
+  VarDecl(TokenPos pos, Type type, std::vector<Expr*> *exprs);
+  ~VarDecl();
+};
+
+class SimpleControl : public Stmt {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
   int type;
   Expr *cond;
-  Statement *body, *elsebody = nullptr;
-  SimpleControl(TokenPos pos, int type, Expr *cond, Statement *body);
+  Stmt *body, *elsebody = nullptr;
+  SimpleControl(TokenPos pos, int type, Expr *cond, Stmt *body);
   ~SimpleControl();
 };
 

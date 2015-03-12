@@ -45,8 +45,9 @@ Module *program_;
   //parse tree related types
   Module *module;
   Block *block;
-  std::vector<Statement*> *stmts;
-  Statement *stmt;
+  std::vector<Stmt*> *stmts;
+  std::vector<Expr*> *exprs;
+  Stmt *stmt;
   Expr *expr;
   SimpleControl *control;
   int token;
@@ -58,15 +59,18 @@ Module *program_;
 
 %token <sval> BADTOK
 %token <token> MODULE IF WHILE ELSE DO
+%token <token> INT
 %token <token> EQUAL PLUS MINUS MUL DIV
 
 %type <module> module
 %type <block> block
 %type <stmts> stmts
+%type <exprs> exprs
 %type <stmt> stmt else
 %type <expr> expr
 %type <control> control
 %type <token> binop controltok
+%type <token> type
 
 %destructor { delete $$; } <sval> <module> <block> <stmt> <expr>
 %destructor {
@@ -79,31 +83,40 @@ Module *program_;
 %left PLUS MINUS
 %left MUL DIV
 //letting bison know how many s/r conflicts it should be seeing- which is
-//exactly the number of operators atm
-//%expect 5
+//exactly the number of operators plus conditionals atm
+%expect 6
 
 %%
 
 dragoon : module { program_ = $1; }
         ;
 
-module : MODULE VSTRING ';' block { $$ = new Module(tpos(@$), $2, $4); delete $2; }
+module : MODULE VSTRING ';' stmts {
+          $$ = new Module(tpos(@$), $2, new Block(tpos(@$), $4));
+          delete $2;
+          }
        ;
 
-//TODO more accurate block range
-block : stmts { $$ = new Block(tpos(@$), $1); }
-      | { $$ = new Block(tpos(@$), new std::vector<Statement*>); }
+block : '{' stmts '}' { $$ = new Block(tpos(@$), $2); }
+      | '{' '}' { $$ = new Block(tpos(@$), new std::vector<Stmt*>); }
 
-stmts : stmt { $$ = new std::vector<Statement*>; $$->push_back($1); }
+stmts : stmt { $$ = new std::vector<Stmt*>; $$->push_back($1); }
       | stmts stmt { $$ = $1; $$->push_back($2); }
       ;
 
-stmt : expr ';' { $$ = $1; }
-     | '{' block '}' { $$ = $2; }
-     | error ';' { yyerrok; $$ = nullptr; }
+stmt : error ';' { yyerrok; $$ = nullptr; }
+     | type exprs ';' { $$ = new VarDecl(tpos(@$), $1, $2); }
+     | expr ';' { $$ = $1; }
+     | block { $$ = $1; }
      | control { $$ = $1; }
      | control else { $$ = $1; $1->elsebody = $2; }
      ;
+
+type : INT
+    ;
+
+exprs : expr { $$ = new std::vector<Expr*>; $$->push_back($1); }
+      | exprs ',' expr { $$ = $1; $$->push_back($3); }
 
 control : controltok '(' expr ')' stmt { $$ = new SimpleControl(tpos(@$), $1, $3, $5); }
 

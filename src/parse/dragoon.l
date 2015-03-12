@@ -31,10 +31,15 @@ int yycolumn = 1;
 <INITIAL>{
 "//"              BEGIN(SINGLE_COMMENT);
 "/*"              BEGIN(MULTI_COMMENT);
+
 "module"          return TOKEN(MODULE);
+
+"int"             return TOKEN(INT);
+
 "if"              return TOKEN(IF);
 "while"           return TOKEN(WHILE);
 "else"            return TOKEN(ELSE);
+
 [(){}.,;]         return *yytext;
 
 "="               return TOKEN(EQUAL);
