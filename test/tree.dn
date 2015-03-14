@@ -1,21 +1,23 @@
 module tree;
 123;
 int bar;
-{
-  thisIsABlock;
-  int x = 4+5*a, y=5, z;
-}
-quack;
-if (x) {}
-while(yz) {
-  x=5;
-}
-if(abc) yz=5;
-else q=z;
-/*  $@*!&$!@)(*&!$@)($*@&!)($*@&@(!)$*) */
-// $(#*@^$!(*!$&@)(*$@!&()!@$*&(@$)&(%*#!&%#(@))))
-while(foo) { //bar
-  bar=baz+5;
-} else {
-  baz=bar+5;
+int func(int x, int y) {
+  quack;
+  if (x) {}
+  while(yz) {
+    x=5;
+  }
+  {
+    thisIsABlock;
+    int x = 4+5*a, y=5, z;
+  }
+  if(abc) yz=5;
+  else q=z;
+  /*  $@*!&$!@)(*&!$@)($*@&!)($*@&@(!)$*) */
+  // $(#*@^$!(*!$&@)(*$@!&()!@$*&(@$)&(%*#!&%#(@))))
+  while(foo) { //bar
+    bar=baz+5;
+  } else {
+    baz=bar+5;
+  }
 }

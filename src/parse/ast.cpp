@@ -164,6 +164,30 @@ void BinOp::print(std::ostream& strm) const {
   strm << "<binop " << tokstr[op] << " " << *lhs << ", " << *rhs << ">";
 }
 
+Param::Param(Type type, IdExpr *id) : type(type), id(id) {}
+Param::~Param() {
+  delete id;
+}
+
+Func::Func(TokenPos pos, Type type, IdExpr *id,
+  std::vector<Param*> *params, Block *body)
+  : Stmt(pos), type(type), id(id), params(params), body(body) {}
+Func::~Func() {
+  delete id;
+  deleteVec<Param>(params);
+  delete body;
+}
+void Func::print(std::ostream& strm) const {
+  strm << "<func " << tokstr[type] << " " << *id << " (";
+  bool first = true;
+  for(Param *p : *params) {
+    if(first) first = false;
+    else strm << ", ";
+    strm << tokstr[p->type] << " " << *(p->id);
+  }
+  strm << ") " << *body;
+}
+
 Module::Module(TokenPos pos, string name, Block *globals) : Node(pos),
   name(name), globals(globals) {
 }

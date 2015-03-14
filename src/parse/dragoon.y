@@ -49,6 +49,8 @@ Module *program_;
   std::vector<Expr*> *exprs;
   Stmt *stmt;
   Expr *expr;
+  IdExpr *id;
+  std::vector<Param*> *params;
   SimpleControl *control;
   int token;
 }
@@ -66,8 +68,10 @@ Module *program_;
 %type <block> block
 %type <stmts> stmts
 %type <exprs> exprs
-%type <stmt> stmt else
+%type <stmt> stmt function else
+%type <params> params paramlist
 %type <expr> expr
+%type <id> id
 %type <control> control
 %type <token> binop controltok
 %type <token> type
@@ -97,14 +101,25 @@ module : MODULE VSTRING ';' stmts {
           }
        ;
 
-block : '{' stmts '}' { $$ = new Block(tpos(@$), $2); }
-      | '{' '}' { $$ = new Block(tpos(@$), new std::vector<Stmt*>); }
+function : type id '(' params ')' block {
+            $$ = new Func(tpos(@$), $1, $2, $4, $6);
+            }
+params : { $$ = new std::vector<Param*>; }
+       | paramlist { $$ = $1; }
+       ;
 
-stmts : stmt { $$ = new std::vector<Stmt*>; $$->push_back($1); }
+paramlist : type id { $$ = new std::vector<Param*>; $$->push_back(new Param($1, $2)); }
+          | params ',' type id { $$ = $1; $$->push_back(new Param($3, $4)); }
+          ;
+
+block : '{' stmts '}' { $$ = new Block(tpos(@$), $2); }
+
+stmts : { $$ = new std::vector<Stmt*>; }
       | stmts stmt { $$ = $1; $$->push_back($2); }
       ;
 
 stmt : error ';' { yyerrok; $$ = nullptr; }
+     | function { $$ = $1; }
      | type exprs ';' { $$ = new VarDecl(tpos(@$), $1, $2); }
      | expr ';' { $$ = $1; }
      | block { $$ = $1; }
@@ -126,9 +141,13 @@ controltok : IF | WHILE
         ;
 
 expr : VINT { $$ = new Int32Expr(tpos(@$), $1); }
-     | VSTRING { $$ = new IdExpr(tpos(@$), $1); delete $1; }
+     | id { $$ = $1; }
      | expr binop expr { $$ = new BinOp(tpos(@$), $2, $1, $3); }
      ;
+
+id : VSTRING { $$ = new IdExpr(tpos(@$), $1); delete $1; }
+   ;
+
 binop : PLUS | MINUS | MUL | DIV | EQUAL
       ;
 %%

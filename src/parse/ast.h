@@ -56,6 +56,7 @@ public:
 //TODO more complex types
 using Type = int;
 
+
 class VarDecl : public Stmt {
 protected:
   virtual void print(std::ostream& strm) const;
@@ -105,6 +106,28 @@ public:
   BinOp(TokenPos pos, int op, Expr *lhs, Expr *rhs);
   ~BinOp();
 };
+
+class Param {
+public:
+  Type type;
+  IdExpr *id;
+  Param(Type type, IdExpr *id);
+  ~Param();
+};
+
+
+class Func : public Stmt {
+protected:
+  virtual void print(std::ostream& strm) const;
+public:
+  Type type;
+  IdExpr *id;
+  std::vector<Param*> *params;
+  Block *body;
+  Func(TokenPos pos, Type type, IdExpr *id, std::vector<Param*> *params, Block *body);
+  ~Func();
+};
+
 
 class Module : public Node {
 protected:
