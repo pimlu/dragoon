@@ -164,6 +164,24 @@ void BinOp::print(std::ostream& strm) const {
   strm << "<binop " << tokstr[op] << " " << *lhs << ", " << *rhs << ">";
 }
 
+void FuncCall::print(std::ostream& strm) const {
+  strm << "<call " << *func << " (";
+  bool first = true;
+  for(Expr *e : *args) {
+    if(first) first = false;
+    else strm << ", ";
+    strm << *e;
+  }
+  strm << ") >";
+}
+FuncCall::FuncCall(TokenPos pos, Expr *func, std::vector<Expr*> *args)
+  : Expr(pos), func(func), args(args) {}
+
+FuncCall::~FuncCall() {
+  delete func;
+  deleteVec<Expr>(args);
+}
+
 Param::Param(Type type, IdExpr *id) : type(type), id(id) {}
 Param::~Param() {
   delete id;

@@ -39,8 +39,6 @@ public:
 
 class Expr : public Stmt {
 public:
-  /// Whether it can be used as a left hand for assignment
-  bool left;
   INITLIST_H(Expr)
 };
 
@@ -82,7 +80,6 @@ class IdExpr : public Expr {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
-  bool left = true;
   string id;
   IdExpr(TokenPos pos, string id);
 };
@@ -91,7 +88,6 @@ class Int32Expr : public Expr {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
-  bool left = false;
   int32 val;
   Int32Expr(TokenPos pos, int32 val);
 };
@@ -101,10 +97,19 @@ protected:
   virtual void print(std::ostream& strm) const;
 public:
   int op;
-  bool left = false;
   Expr *lhs, *rhs;
   BinOp(TokenPos pos, int op, Expr *lhs, Expr *rhs);
   ~BinOp();
+};
+
+class FuncCall : public Expr {
+protected:
+  virtual void print(std::ostream& strm) const;
+public:
+  Expr *func;
+  std::vector<Expr*> *args;
+  FuncCall(TokenPos pos, Expr *func, std::vector<Expr*> *args);
+  ~FuncCall();
 };
 
 class Param {

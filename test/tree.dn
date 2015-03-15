@@ -2,7 +2,8 @@ module tree;
 123;
 int bar;
 int func(int x, int y) {
-  quack;
+  quack(x, y);
+  x+y();
   if (x) {}
   while(yz) {
     x=5;

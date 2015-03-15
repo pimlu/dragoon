@@ -76,20 +76,22 @@ Module *program_;
 %type <token> binop controltok
 %type <token> type
 
-%destructor { delete $$; } <sval> <module> <block> <stmt> <expr>
+%destructor { delete $$; } <sval> <module> <block> <stmt> <expr> <id> <control>
 %destructor {
-  //just use block's destructor
-  delete (new Block(tpos(@$), $$));
-  } <stmts>
-
+  for(auto i : *$$) {
+    delete i;
+  }
+  delete $$;
+  } <stmts> <exprs> <params>
 //operator precedence
+%left '(' ')'
 %right EQUAL
 %left PLUS MINUS
 %left MUL DIV
-//letting bison know how many s/r conflicts it should be seeing- which is
-//exactly the number of operators plus conditionals atm
-%expect 6
-
+/*letting bison know how many s/r conflicts it should be seeing- which is
+5 for operators, 1 for conditionals, 1 for (x+y)() vs x+y(), 1 for
+function exprs vs defs */
+%expect 8
 %%
 
 dragoon : module { program_ = $1; }
@@ -109,7 +111,7 @@ params : { $$ = new std::vector<Param*>; }
        ;
 
 paramlist : type id { $$ = new std::vector<Param*>; $$->push_back(new Param($1, $2)); }
-          | params ',' type id { $$ = $1; $$->push_back(new Param($3, $4)); }
+          | paramlist ',' type id { $$ = $1; $$->push_back(new Param($3, $4)); }
           ;
 
 block : '{' stmts '}' { $$ = new Block(tpos(@$), $2); }
@@ -143,6 +145,8 @@ controltok : IF | WHILE
 expr : VINT { $$ = new Int32Expr(tpos(@$), $1); }
      | id { $$ = $1; }
      | expr binop expr { $$ = new BinOp(tpos(@$), $2, $1, $3); }
+     | expr '(' ')' { $$ = new FuncCall(tpos(@$), $1, new std::vector<Expr*>); }
+     | expr '(' exprs ')' { $$ = new FuncCall(tpos(@$), $1, $3); }
      ;
 
 id : VSTRING { $$ = new IdExpr(tpos(@$), $1); delete $1; }
