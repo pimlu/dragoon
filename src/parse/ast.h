@@ -42,6 +42,13 @@ public:
   INITLIST_H(Expr)
 };
 
+class EmptyStmt : public Stmt {
+protected:
+  virtual void print(std::ostream& strm) const;
+public:
+  EmptyStmt(TokenPos pos);
+};
+
 class Block : public Stmt {
 protected:
   virtual void print(std::ostream& strm) const;

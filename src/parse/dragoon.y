@@ -123,6 +123,7 @@ stmts : { $$ = new std::vector<Stmt*>; }
 stmt : error ';' { yyerrok; $$ = nullptr; }
      | function { $$ = $1; }
      | type exprs ';' { $$ = new VarDecl(tpos(@$), $1, $2); }
+     | ';' { $$ = new EmptyStmt(tpos(@1)); }
      | expr ';' { $$ = $1; }
      | block { $$ = $1; }
      | control { $$ = $1; }
@@ -142,7 +143,8 @@ else : ELSE stmt { $$ = $2; }
 controltok : IF | WHILE
         ;
 
-expr : VINT { $$ = new Int32Expr(tpos(@$), $1); }
+expr : '(' expr ')' { $$ = $2; }
+     | VINT { $$ = new Int32Expr(tpos(@$), $1); }
      | id { $$ = $1; }
      | expr binop expr { $$ = new BinOp(tpos(@$), $2, $1, $3); }
      | expr '(' ')' { $$ = new FuncCall(tpos(@$), $1, new std::vector<Expr*>); }

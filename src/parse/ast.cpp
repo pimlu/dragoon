@@ -100,9 +100,17 @@ Node::Node(int fline, int fcol, int lline, int lcol) :
 INITLIST_CPP(Stmt,Node);
 INITLIST_CPP(Expr,Stmt);
 
+
+EmptyStmt::EmptyStmt(TokenPos pos) : Stmt(pos) {}
+void EmptyStmt::print(std::ostream& strm) const {
+  strm << "<emptystmt>";
+}
+
 Block::Block(TokenPos pos, std::vector<Stmt*> *stmts)
   : Stmt(pos), stmts(stmts) {}
-
+Block::~Block() {
+  deleteVec<Stmt>(stmts);
+}
 void Block::print(std::ostream& strm) const {
   strm << "<block";
   tabl++;
@@ -110,9 +118,6 @@ void Block::print(std::ostream& strm) const {
     strm << tabl << *s;
   }
   strm << --tabl << ">";
-}
-Block::~Block() {
-  deleteVec<Stmt>(stmts);
 }
 
 VarDecl::VarDecl(TokenPos pos, Type type, std::vector<Expr*> *exprs)

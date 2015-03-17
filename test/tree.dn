@@ -1,15 +1,11 @@
 module tree;
-123;
 int bar;
 int func(int x, int y) {
+  ;
   quack(x, y);
   x+y();
   if (x) {}
-  while(yz) {
-    x=5;
-  }
   {
-    thisIsABlock;
     int x = 4+5*a, y=5, z;
   }
   if(abc) yz=5;
