@@ -120,13 +120,22 @@ void Block::print(std::ostream& strm) const {
   strm << --tabl << ">";
 }
 
-VarDecl::VarDecl(TokenPos pos, Type type, std::vector<Expr*> *exprs)
+
+INITLIST_CPP(Type,Node);
+
+Primitive::Primitive(TokenPos pos, int type) : Type(pos), type(type) {}
+void Primitive::print(std::ostream& strm) const {
+  strm << "<prim " << tokstr[type] << ">";
+}
+
+VarDecl::VarDecl(TokenPos pos, Type *type, std::vector<Expr*> *exprs)
 : Stmt(pos), type(type), exprs(exprs) {}
 VarDecl::~VarDecl() {
+  delete type;
   deleteVec<Expr>(exprs);
 }
 void VarDecl::print(std::ostream& strm) const {
-  strm << "<var " << tokstr[type] << " ";
+  strm << "<var " << *type << " ";
   for(Expr* e : *exprs) {
     strm << *e << ",";
   }
@@ -187,26 +196,28 @@ FuncCall::~FuncCall() {
   deleteVec<Expr>(args);
 }
 
-Param::Param(Type type, IdExpr *id) : type(type), id(id) {}
+Param::Param(Type *type, IdExpr *id) : type(type), id(id) {}
 Param::~Param() {
+  delete type;
   delete id;
 }
 
-Func::Func(TokenPos pos, Type type, IdExpr *id,
+Func::Func(TokenPos pos, Type *type, IdExpr *id,
   std::vector<Param*> *params, Block *body)
   : Stmt(pos), type(type), id(id), params(params), body(body) {}
 Func::~Func() {
+  delete type;
   delete id;
   deleteVec<Param>(params);
   delete body;
 }
 void Func::print(std::ostream& strm) const {
-  strm << "<func " << tokstr[type] << " " << *id << " (";
+  strm << "<func " << *type << " " << *id << " (";
   bool first = true;
   for(Param *p : *params) {
     if(first) first = false;
     else strm << ", ";
-    strm << tokstr[p->type] << " " << *(p->id);
+    strm << *p->type << " " << *(p->id);
   }
   strm << ") " << *body;
 }

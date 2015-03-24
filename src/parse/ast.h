@@ -32,6 +32,23 @@ public:
   INITLIST_H(Node)
 };
 
+
+
+class Type : public Node {
+public:
+  INITLIST_H(Type);
+};
+
+class Primitive : public Type {
+protected:
+  virtual void print(std::ostream& strm) const;
+public:
+  int type;
+  Primitive(TokenPos pos, int type);
+};
+
+
+
 class Stmt : public Node {
 public:
   INITLIST_H(Stmt)
@@ -58,17 +75,13 @@ public:
   ~Block();
 };
 
-//TODO more complex types
-using Type = int;
-
-
 class VarDecl : public Stmt {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
-  Type type;
+  Type *type;
   std::vector<Expr*> *exprs;
-  VarDecl(TokenPos pos, Type type, std::vector<Expr*> *exprs);
+  VarDecl(TokenPos pos, Type *type, std::vector<Expr*> *exprs);
   ~VarDecl();
 };
 
@@ -121,9 +134,9 @@ public:
 
 class Param {
 public:
-  Type type;
+  Type *type;
   IdExpr *id;
-  Param(Type type, IdExpr *id);
+  Param(Type *type, IdExpr *id);
   ~Param();
 };
 
@@ -132,11 +145,11 @@ class Func : public Stmt {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
-  Type type;
+  Type *type;
   IdExpr *id;
   std::vector<Param*> *params;
   Block *body;
-  Func(TokenPos pos, Type type, IdExpr *id, std::vector<Param*> *params, Block *body);
+  Func(TokenPos pos, Type *type, IdExpr *id, std::vector<Param*> *params, Block *body);
   ~Func();
 };
 

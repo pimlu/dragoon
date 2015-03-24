@@ -53,6 +53,7 @@ Module *program_;
   std::vector<Param*> *params;
   SimpleControl *control;
   int token;
+  Type *type;
 }
 
 %token <ival> VINT
@@ -73,10 +74,10 @@ Module *program_;
 %type <expr> expr
 %type <id> id
 %type <control> control
-%type <token> binop controltok
-%type <token> type
+%type <token> binop controltok primitive
+%type <type> type
 
-%destructor { delete $$; } <sval> <module> <block> <stmt> <expr> <id> <control>
+%destructor { delete $$; } <sval> <module> <block> <stmt> <expr> <id> <control> <type>
 %destructor {
   for(auto i : *$$) {
     delete i;
@@ -130,8 +131,11 @@ stmt : error ';' { yyerrok; $$ = nullptr; }
      | control else { $$ = $1; $1->elsebody = $2; }
      ;
 
-type : INT
-    ;
+type : primitive { $$ = new Primitive(tpos(@$), $1); }
+     ;
+
+primitive : INT
+          ;
 
 exprs : expr { $$ = new std::vector<Expr*>; $$->push_back($1); }
       | exprs ',' expr { $$ = $1; $$->push_back($3); }
@@ -141,7 +145,7 @@ control : controltok '(' expr ')' stmt { $$ = new SimpleControl(tpos(@$), $1, $3
 else : ELSE stmt { $$ = $2; }
 
 controltok : IF | WHILE
-        ;
+           ;
 
 expr : '(' expr ')' { $$ = $2; }
      | VINT { $$ = new Int32Expr(tpos(@$), $1); }
