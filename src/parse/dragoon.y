@@ -62,7 +62,7 @@ Module *program_;
 
 %token <sval> BADTOK
 %token <token> MODULE IF WHILE ELSE DO
-%token <token> INT
+%token <token> CHAR INT SHORT LONG UNSIGNED
 %token <token> EQUAL PLUS MINUS MUL DIV
 
 %type <module> module
@@ -74,8 +74,8 @@ Module *program_;
 %type <expr> expr
 %type <id> id
 %type <control> control
-%type <token> binop controltok primitive
-%type <type> type
+%type <token> binop controltok
+%type <type> type primitive integer
 
 %destructor { delete $$; } <sval> <module> <block> <stmt> <expr> <id> <control> <type>
 %destructor {
@@ -131,11 +131,20 @@ stmt : error ';' { yyerrok; $$ = nullptr; }
      | control else { $$ = $1; $1->elsebody = $2; }
      ;
 
-type : primitive { $$ = new Primitive(tpos(@$), $1); }
+type : primitive { $$ = $1; }
      ;
 
-primitive : INT
+primitive : integer { $$ = $1; }
+          | CHAR { $$ = new TInt(tpos(@$), true, true, 1); }
+          | UNSIGNED CHAR { $$ = new TInt(tpos(@$), true, false, 1); }
           ;
+integer   : INT { $$ = new TInt(tpos(@$), false, true, 4); }
+          | SHORT optint { $$ = new TInt(tpos(@$), false, true, 2); }
+          | UNSIGNED SHORT optint { $$ = new TInt(tpos(@$), false, false, 2); }
+          | LONG optint { $$ = new TInt(tpos(@$), false, true, 8); }
+          | UNSIGNED LONG optint { $$ = new TInt(tpos(@$), false, false, 8); }
+          ;
+optint : INT | ;
 
 exprs : expr { $$ = new std::vector<Expr*>; $$->push_back($1); }
       | exprs ',' expr { $$ = $1; $$->push_back($3); }

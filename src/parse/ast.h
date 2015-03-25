@@ -39,14 +39,15 @@ public:
   INITLIST_H(Type);
 };
 
-class Primitive : public Type {
+class TInt : public Type {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
-  int type;
-  Primitive(TokenPos pos, int type);
+  bool text;
+  bool sign;
+  int size;
+  TInt(TokenPos pos, bool text, bool sign, int size);
 };
-
 
 
 class Stmt : public Node {

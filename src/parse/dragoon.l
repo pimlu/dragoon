@@ -34,7 +34,11 @@ int yycolumn = 1;
 
 "module"          return TOKEN(MODULE);
 
+"char"            return TOKEN(CHAR);
 "int"             return TOKEN(INT);
+"short"           return TOKEN(SHORT);
+"long"            return TOKEN(LONG);
+"unsigned"        return TOKEN(UNSIGNED);
 
 "if"              return TOKEN(IF);
 "while"           return TOKEN(WHILE);

@@ -123,9 +123,10 @@ void Block::print(std::ostream& strm) const {
 
 INITLIST_CPP(Type,Node);
 
-Primitive::Primitive(TokenPos pos, int type) : Type(pos), type(type) {}
-void Primitive::print(std::ostream& strm) const {
-  strm << "<prim " << tokstr[type] << ">";
+TInt::TInt(TokenPos pos, bool text, bool sign, int size)
+  : Type(pos), text(text), sign(sign), size(size) {}
+void TInt::print(std::ostream& strm) const {
+  strm << "<tint " << (text?"char ":"") << (sign?"signed ":"unsigned ") << size << ">";
 }
 
 VarDecl::VarDecl(TokenPos pos, Type *type, std::vector<Expr*> *exprs)
