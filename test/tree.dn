@@ -1,6 +1,7 @@
 module tree;
 int bar;
-int func(int x, int y) {
+int func(int, int) doSomething;
+int doSomething(int x, int y) {
   ;
   quack(x, y);
   x+y();

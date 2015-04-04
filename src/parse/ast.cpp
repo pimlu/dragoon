@@ -129,6 +129,20 @@ void TInt::print(std::ostream& strm) const {
   strm << "<tint " << (text?"char ":"") << (sign?"signed ":"unsigned ") << size << ">";
 }
 
+TFunc::TFunc(TokenPos pos, Type *ret, std::vector<Type*> *params)
+  : Type(pos), ret(ret), params(params) {}
+TFunc::~TFunc() {
+  delete ret;
+  deleteVec<Type>(params);
+}
+void TFunc::print(std::ostream& strm) const {
+  strm << "<tfunc " << *ret  << " (";
+  for(Type *t : *params) {
+    strm << *t << ",";
+  }
+  strm << ")>";
+}
+
 VarDecl::VarDecl(TokenPos pos, Type *type, std::vector<Expr*> *exprs)
 : Stmt(pos), type(type), exprs(exprs) {}
 VarDecl::~VarDecl() {
@@ -137,7 +151,7 @@ VarDecl::~VarDecl() {
 }
 void VarDecl::print(std::ostream& strm) const {
   strm << "<var " << *type << " ";
-  for(Expr* e : *exprs) {
+  for(Expr *e : *exprs) {
     strm << *e << ",";
   }
   strm << ">";
@@ -203,17 +217,17 @@ Param::~Param() {
   delete id;
 }
 
-Func::Func(TokenPos pos, Type *type, IdExpr *id,
+Func::Func(TokenPos pos, Type *ret, IdExpr *id,
   std::vector<Param*> *params, Block *body)
-  : Stmt(pos), type(type), id(id), params(params), body(body) {}
+  : Stmt(pos), ret(ret), id(id), params(params), body(body) {}
 Func::~Func() {
-  delete type;
+  delete ret;
   delete id;
   deleteVec<Param>(params);
   delete body;
 }
 void Func::print(std::ostream& strm) const {
-  strm << "<func " << *type << " " << *id << " (";
+  strm << "<func " << *ret << " " << *id << " (";
   bool first = true;
   for(Param *p : *params) {
     if(first) first = false;

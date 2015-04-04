@@ -49,6 +49,16 @@ public:
   TInt(TokenPos pos, bool text, bool sign, int size);
 };
 
+class TFunc : public Type {
+protected:
+  virtual void print(std::ostream& strm) const;
+public:
+  Type *ret;
+  std::vector<Type*> *params;
+  TFunc(TokenPos pos, Type *ret, std::vector<Type*> *params);
+  ~TFunc();
+};
+
 
 class Stmt : public Node {
 public:
@@ -146,11 +156,11 @@ class Func : public Stmt {
 protected:
   virtual void print(std::ostream& strm) const;
 public:
-  Type *type;
+  Type *ret;
   IdExpr *id;
   std::vector<Param*> *params;
   Block *body;
-  Func(TokenPos pos, Type *type, IdExpr *id, std::vector<Param*> *params, Block *body);
+  Func(TokenPos pos, Type *ret, IdExpr *id, std::vector<Param*> *params, Block *body);
   ~Func();
 };
 

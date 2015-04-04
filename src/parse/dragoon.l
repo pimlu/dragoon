@@ -33,6 +33,7 @@ int yycolumn = 1;
 "/*"              BEGIN(MULTI_COMMENT);
 
 "module"          return TOKEN(MODULE);
+"func"        return TOKEN(FUNC);
 
 "char"            return TOKEN(CHAR);
 "int"             return TOKEN(INT);

@@ -54,6 +54,7 @@ Module *program_;
   SimpleControl *control;
   int token;
   Type *type;
+  std::vector<Type*> *types;
 }
 
 %token <ival> VINT
@@ -61,7 +62,7 @@ Module *program_;
 %token <sval> VSTRING
 
 %token <sval> BADTOK
-%token <token> MODULE IF WHILE ELSE DO
+%token <token> MODULE IF WHILE ELSE DO FUNC
 %token <token> CHAR INT SHORT LONG UNSIGNED
 %token <token> EQUAL PLUS MINUS MUL DIV
 
@@ -76,6 +77,7 @@ Module *program_;
 %type <control> control
 %type <token> binop controltok
 %type <type> type primitive integer
+%type <types> types typelist
 
 %destructor { delete $$; } <sval> <module> <block> <stmt> <expr> <id> <control> <type>
 %destructor {
@@ -83,7 +85,7 @@ Module *program_;
     delete i;
   }
   delete $$;
-  } <stmts> <exprs> <params>
+  } <stmts> <exprs> <params> <types>
 //operator precedence
 %left '(' ')'
 %right EQUAL
@@ -131,8 +133,18 @@ stmt : error ';' { yyerrok; $$ = nullptr; }
      | control else { $$ = $1; $1->elsebody = $2; }
      ;
 
-type : primitive { $$ = $1; }
+type : '(' type ')' { $$ = $2; }
+     | primitive { $$ = $1; }
+     | type FUNC '(' types ')' { $$ = new TFunc(tpos(@$), $1, $4); }
      ;
+
+types : { $$ = new std::vector<Type*>; }
+      | typelist { $$ = $1; }
+      ;
+
+typelist : type { $$ = new std::vector<Type*>; $$->push_back($1); }
+         | typelist ',' type { $$ = $1; $$->push_back($3); }
+         ;
 
 primitive : integer { $$ = $1; }
           | CHAR { $$ = new TInt(tpos(@$), true, true, 1); }
