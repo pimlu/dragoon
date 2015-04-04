@@ -1,6 +1,7 @@
 %code requires {
 #include "../global.h"
 #include "ast.h"
+#include "../error.h"
 using namespace ast;
 
 extern bool errs_;
@@ -9,7 +10,7 @@ extern Module *program_;
 }
 
 %{
-#include <iostream>
+#include <sstream>
 #include <cstdio>
 using namespace std;
 
@@ -57,11 +58,11 @@ Module *program_;
   std::vector<Type*> *types;
 }
 
-%token <ival> VINT
-%token <fval> VFLOAT
-%token <sval> VSTRING
+%token <ival> VINT "integer"
+%token <fval> VFLOAT "float"
+%token <sval> VSTRING "identifier"
 
-%token <sval> BADTOK
+%token <sval> BADTOK "bad token"
 %token <token> MODULE IF WHILE ELSE DO FUNC
 %token <token> CHAR INT SHORT LONG UNSIGNED
 %token <token> EQUAL PLUS MINUS MUL DIV
@@ -109,6 +110,7 @@ module : MODULE VSTRING ';' stmts {
 function : type id '(' params ')' block {
             $$ = new Func(tpos(@$), $1, $2, $4, $6);
             }
+
 params : { $$ = new std::vector<Param*>; }
        | paramlist { $$ = $1; }
        ;
@@ -185,6 +187,11 @@ binop : PLUS | MINUS | MUL | DIV | EQUAL
 
 void yyerror(const char *s) {
   errs_ = true;
-  cout << path_ << ":" << yylloc.first_line << ":" << yylloc.first_column
-    << ": error:" << endl<< s << endl;
+  ostringstream msg;
+  msg << s;
+  if(yychar == BADTOK) {
+    msg << " '" << yylval.sval << "'";
+  }
+
+  errormsg(path_, tpos(yylloc), msg.str());
 }

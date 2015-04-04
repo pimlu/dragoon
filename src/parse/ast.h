@@ -2,6 +2,7 @@
 #include "../global.h"
 #include <vector>
 #include <map>
+#include "TokenPos.h"
 
 #define INITLIST_H(name)  name();\
   name(TokenPos pos);\
@@ -14,12 +15,6 @@ using TokStr = std::map<int, string>;
 using StrTok = std::map<string, int>;
 extern TokStr tokstr;
 extern StrTok strtok;
-
-//this is layout compatible with YYLTYPE, thus reinterpret_cast is guaranteed
-//to work correctly
-struct TokenPos {
-  int fline, fcol, lline, lcol;
-};
 
 class Node {
 protected:
