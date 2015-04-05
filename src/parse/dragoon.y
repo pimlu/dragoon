@@ -1,7 +1,7 @@
 %code requires {
 #include "../global.h"
 #include "ast.h"
-#include "../error.h"
+#include "../cli/error.h"
 using namespace ast;
 
 extern bool errs_;
@@ -80,7 +80,8 @@ Module *program_;
 %type <type> type primitive integer
 %type <types> types typelist
 
-%destructor { delete $$; } <sval> <module> <block> <stmt> <expr> <id> <control> <type>
+%destructor { free($$); } <sval>
+%destructor { delete $$; } <module> <block> <stmt> <expr> <id> <control> <type>
 %destructor {
   for(auto i : *$$) {
     delete i;
@@ -102,8 +103,8 @@ dragoon : module { program_ = $1; }
         ;
 
 module : MODULE VSTRING ';' stmts {
-          $$ = new Module(tpos(@$), $2, new Block(tpos(@$), $4));
-          delete $2;
+          $$ = new Module(tpos(@$), $2, errs_, new Block(tpos(@$), $4));
+          free($2);
           }
        ;
 
@@ -125,7 +126,7 @@ stmts : { $$ = new std::vector<Stmt*>; }
       | stmts stmt { $$ = $1; $$->push_back($2); }
       ;
 
-stmt : error ';' { yyerrok; $$ = nullptr; }
+stmt : error ';' { yyerrok; $$ = new BadStmt(tpos(@$)); }
      | function { $$ = $1; }
      | type exprs ';' { $$ = new VarDecl(tpos(@$), $1, $2); }
      | ';' { $$ = new EmptyStmt(tpos(@1)); }
@@ -178,7 +179,7 @@ expr : '(' expr ')' { $$ = $2; }
      | expr '(' exprs ')' { $$ = new FuncCall(tpos(@$), $1, $3); }
      ;
 
-id : VSTRING { $$ = new IdExpr(tpos(@$), $1); delete $1; }
+id : VSTRING { $$ = new IdExpr(tpos(@$), $1); free($1); }
    ;
 
 binop : PLUS | MINUS | MUL | DIV | EQUAL

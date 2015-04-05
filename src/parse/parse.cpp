@@ -14,10 +14,6 @@ Module* parse(const char *path) {
   // set flex to read from it instead of defaulting to STDIN:
   yyrestart(file);
   yyparse();
-
-  if(errs_) {
-    delete program_;
-    program_ = nullptr;
-  }
+  
   return program_;
 }

@@ -20,18 +20,17 @@ dist/$(EXECUTABLE): $(OBJECTS) $(PARSEO)
 	@mkdir -p dist
 	$(CXX) $(OBJECTS) $(PARSEO) $(LDFLAGS) -o $@
 
-build/%.o: src/%.cpp $(PARSE).tab.c $(PARSE).tab.h
-	@mkdir -p build
+build:
+	find src/* -type d -print0 | sed 's/src/build/g' | xargs -0 mkdir -p
+
+build/%.o: src/%.cpp $(PARSE).tab.c $(PARSE).tab.h | build
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-
-
-build/parse/bison.o: $(PARSE).tab.c
+build/parse/bison.o: $(PARSE).tab.c | build
 	$(CXX) $(CFLAGS) $< -o $@
 
-$(PARSE).tab.c $(PARSE).tab.h: $(PARSE).y
+$(PARSE).tab.c $(PARSE).tab.h: $(PARSE).y | build
 	bison --debug --verbose -d $< -o $(PARSE).tab.c
-
 
 build/parse/flex.o: $(PARSE).yy.c $(PARSE).tab.c $(PARSE).tab.h
 	$(CXX) $(CFLAGS) $< -o $@
@@ -39,10 +38,10 @@ build/parse/flex.o: $(PARSE).yy.c $(PARSE).tab.c $(PARSE).tab.h
 $(PARSE).yy.c: $(PARSE).l
 	flex -o$@ $<
 
+clean: FORCE
+	rm -rf build $(PARSE).tab.c $(PARSE).tab.h $(PARSE).yy.c
 
-
-clean:
-	rm -f $(OBJECTS) $(PARSE).tab.c $(PARSE).tab.h $(PARSE).yy.c
-
-rmdist:
+rmdist: FORCE
 	rm -rf dist/*
+
+FORCE:

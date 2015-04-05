@@ -1,5 +1,5 @@
 #include "global.h"
-#include "Opts.h"
+#include "cli/Opts.h"
 #include "parse/parse.h"
 
 int main(int argc, char *argv[]) {

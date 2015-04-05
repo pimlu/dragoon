@@ -28,7 +28,7 @@ public:
 };
 
 
-
+//type classes, all prefixed with T
 class Type : public Node {
 public:
   INITLIST_H(Type);
@@ -65,6 +65,13 @@ public:
   INITLIST_H(Expr)
 };
 
+class BadStmt : public Stmt {
+protected:
+  virtual void print(std::ostream& strm) const;
+public:
+  BadStmt(TokenPos pos);
+};
+
 class EmptyStmt : public Stmt {
 protected:
   virtual void print(std::ostream& strm) const;
@@ -91,6 +98,7 @@ public:
   ~VarDecl();
 };
 
+//everything but for loops
 class SimpleControl : public Stmt {
 protected:
   virtual void print(std::ostream& strm) const;
@@ -165,8 +173,9 @@ protected:
   virtual void print(std::ostream& strm) const;
 public:
   string name;
+  bool errs;
   Block *globals;
-  Module(TokenPos pos, string name, Block *globals);
+  Module(TokenPos pos, string name, bool errs, Block *globals);
   ~Module();
 };
 

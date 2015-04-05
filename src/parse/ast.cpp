@@ -101,6 +101,11 @@ INITLIST_CPP(Stmt,Node);
 INITLIST_CPP(Expr,Stmt);
 
 
+BadStmt::BadStmt(TokenPos pos) : Stmt(pos) {}
+void BadStmt::print(std::ostream& strm) const {
+  strm << "<badstmt>";
+}
+
 EmptyStmt::EmptyStmt(TokenPos pos) : Stmt(pos) {}
 void EmptyStmt::print(std::ostream& strm) const {
   strm << "<emptystmt>";
@@ -237,14 +242,13 @@ void Func::print(std::ostream& strm) const {
   strm << ") " << *body;
 }
 
-Module::Module(TokenPos pos, string name, Block *globals) : Node(pos),
-  name(name), globals(globals) {
-}
+Module::Module(TokenPos pos, string name, bool errs, Block *globals)
+  : Node(pos), name(name), errs(errs), globals(globals) {}
 Module::~Module() {
   delete globals;
 }
 void Module::print(std::ostream& strm) const {
-  strm << "<module " << name << " " << *globals << ">";
+  strm << "<module " << name << (errs?" [BAD] ":" ") << *globals << ">";
 }
 
 }
