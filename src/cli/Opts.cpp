@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 void help() {
-  cout << "usage: dragoon [-t x86|js] [-o <output file>] [<input files>]"<<endl;
+  cout << "usage: dragoon [-t x86|js] [-PS] [-o <output file>] [<input files>]"<<endl;
   std::exit(1);
 }
 
@@ -15,7 +15,7 @@ Opts::Opts(int argc, char *argv[]) {
 
   int c;
   opterr = 0;
-  while((c = getopt (argc, argv, "ht:o:")) != -1) {
+  while((c = getopt (argc, argv, "ht:o:PSI")) != -1) {
     switch(c) {
       case 'h':
         help();
@@ -33,6 +33,15 @@ Opts::Opts(int argc, char *argv[]) {
         break;
       case 'o':
         ofile = string(optarg);
+        break;
+      case 'P':
+        stage = PARSE;
+        break;
+      case 'S':
+        stage = SEMANTIC;
+        break;
+      case 'I':
+        stage = IR;
         break;
       case '?':
         if(optopt == 'o') {
