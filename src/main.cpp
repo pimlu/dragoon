@@ -1,6 +1,7 @@
 #include "global.h"
 #include "cli/Opts.h"
 #include "parse/parse.h"
+#include "semantic/semantic.h"
 
 int main(int argc, char *argv[]) {
   Opts opts(argc, argv);
@@ -14,9 +15,7 @@ int main(int argc, char *argv[]) {
   Module *program = parse(argv[opts.nonopts]);
   if(!program) return 1;
   //if we need SEMANTIC, do it
-  if(opts.stage >= Opts::SEMANTIC) {
-    cout << "semantic" << endl;
-  }
+  if(opts.stage >= Opts::SEMANTIC) semantic(program);
   //if stage is PARSE or SEMANTIC, we quit here, outputting our tree
   if(opts.stage <= Opts::SEMANTIC) {
     cout << *program << endl;

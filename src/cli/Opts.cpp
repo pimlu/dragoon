@@ -3,7 +3,12 @@
 #include <unistd.h>
 
 void help() {
-  cout << "usage: dragoon [-t x86|js] [-PS] [-o <output file>] [<input files>]"<<endl;
+  cout << "usage: dragoon [-t x86|js] [-PSI] [-o <output file>] [<input files>]"<<endl;
+  cout << "-t: determines what compile target to use" << endl;
+  cout << "-o: determines what output file (if t not specified, will decide type)"<<endl;
+  cout << "-P: only output parse tree" << endl;
+  cout << "-S: output semantic analysis" << endl;
+  cout << "-I: output intermediate code" << endl;
   std::exit(1);
 }
 
