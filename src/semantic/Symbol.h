@@ -8,6 +8,6 @@ public:
   enum Kinds {VAR, PARAM, TDEF};
   Kinds kind;
   ast::Type *type;
-  Symbol(string id, bool tdef, ast::Type *type);
-  ~Symbol();
+  Symbol(string id, Kinds kind, ast::Type *type);
+  
 };
